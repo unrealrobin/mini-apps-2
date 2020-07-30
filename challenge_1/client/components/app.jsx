@@ -5,12 +5,15 @@ import ReactPaginate from 'react-paginate';
 
 
 class App extends React.Component {
+
   constructor(props){
     super(props);
 
     this.state ={
       events: [],
       value: '',
+      currentPage: 1,
+
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -24,13 +27,14 @@ class App extends React.Component {
     })
   }
 
-  handleSubmit(event){
+  handleSubmit(event, page, increment){
     event.preventDefault();
     console.log('handling submit')
 
     //create a request with json server that uses the search term and returns a list of results
-    const { value } = this.state;
-    const endpoint = `/events?q=${value}`;
+    const { value, currentPage } = this.state;
+    const limit= 20;
+    const endpoint = `/events?q=${value}&_page=${currentPage}&_limit=${limit}`;
 
     axios.get(endpoint)
     .then((listOfEvents) => {
@@ -39,6 +43,12 @@ class App extends React.Component {
       })
     })
   }
+
+  handlePageClick() {
+
+
+
+  };
 
   renderEvents(){
     const { events } = this.state;
@@ -52,7 +62,7 @@ class App extends React.Component {
           nextLabel={'next'}
           breakLabel={'...'}
           breakClassName={'break-me'}
-          pageCount={this.state.pageCount}
+          pageCount={Math.ceil(events.length / 10)}
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
           onPageChange={this.handlePageClick}
